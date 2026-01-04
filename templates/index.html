@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Placement Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        body {
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #1e3a8a);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        .card-container {
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 1.75rem;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 14px 48px 14px 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .input-field.error {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .input-field.success {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .input-wrapper:focus-within .input-icon {
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .label-text {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+        
+        .error-text {
+            font-size: 12px;
+            color: #ef4444;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 18px;
+        }
+        
+        .success-text {
+            font-size: 12px;
+            color: #10b981;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        .result-card {
+            animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 24px;
+            color: white;
+            box-shadow: 0 20px 50px rgba(16, 185, 129, 0.3);
+        }
+        
+        .progress-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            justify-content: center;
+        }
+        
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-dot.active {
+            background: #3b82f6;
+            width: 32px;
+            border-radius: 4px;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tooltip-container {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .tooltip-icon {
+            width: 20px;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: help;
+            transition: all 0.3s ease;
+        }
+        
+        .tooltip-icon:hover {
+            background: #3b82f6;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 130%;
+            right: 0;
+            background-color: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 100;
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            right: 8px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+        
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .field-strength {
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .field-strength-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 640px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .card-container {
+                padding: 1.25rem !important;
+            }
+            
+            .input-wrapper {
+                margin-bottom: 1.25rem;
+            }
+            
+            .input-field {
+                padding: 11px 38px 11px 38px;
+                font-size: 14px;
+            }
+            
+            .input-icon {
+                font-size: 18px;
+                left: 12px;
+            }
+            
+            .tooltip-container {
+                right: 10px;
+            }
+            
+            .tooltip-icon {
+                width: 18px;
+                height: 18px;
+                font-size: 11px;
+            }
+            
+            .tooltip-text {
+                font-size: 10px;
+                padding: 6px 10px;
+                white-space: normal;
+                max-width: 180px;
+                right: -10px;
+            }
+            
+            .submit-btn {
+                padding: 13px;
+                font-size: 14px;
+            }
+            
+            .label-text {
+                font-size: 12px;
+            }
+            
+            .error-text, .success-text {
+                font-size: 11px;
+            }
+            
+            .progress-dot {
+                width: 6px;
+                height: 6px;
+            }
+            
+            .progress-dot.active {
+                width: 24px;
+            }
+            
+            .progress-indicator {
+                gap: 6px;
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem !important;
+            }
+            
+            p {
+                font-size: 0.75rem !important;
+            }
+            
+            .result-card {
+                padding: 16px;
+                margin-top: 16px;
+            }
+            
+            .field-strength {
+                height: 3px;
+            }
+            
+            svg {
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+            }
+        }
+        
+        /* Tablet Responsiveness */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .card-container {
+                padding: 2rem !important;
+                max-width: 600px;
+            }
+            
+            .input-field {
+                font-size: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem !important;
+            }
+        }
+        
+        /* Large Desktop */
+        @media (min-width: 1025px) {
+            .card-container {
+                max-width: 700px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    
+    <div class="card-container glass-card rounded-3xl p-10 max-w-lg w-full">
+        
+        <div class="text-center mb-8">
+            <div class="inline-block p-4 bg-blue-50 rounded-2xl mb-4">
+                <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Career Placement Intelligence</h1>
+            <p class="text-slate-600 text-sm">Advanced analytics for placement prediction</p>
+        </div>
+
+        <div class="progress-indicator">
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+
+        <form id="placementForm" action="/" method="post" novalidate>
+            
+            <div class="input-wrapper">
+                <label class="label-text">AGE</label>
+                <div class="relative">
+                    <span class="input-icon">👤</span>
+                    <input 
+                        type="number" 
+                        name="age" 
+                        id="age"
+                        placeholder="Enter your age" 
+                        class="input-field"
+                        required
+                        min="18"
+                        max="24"
+                    >
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <span class="tooltip-text">Age between 18-24 years</span>
+                    </div>
+                </div>
+                <div class="error-text" id="age-error"></div>
+            </div>
+
+            <div class="input-wrapper">
+                <label class="label-text">CUMULATIVE GPA</label>
+                <div class="relative">
+                    <span class="input-icon">📊</span>
+                    <input 
+                        type="number" 
+                        step="0.01" 
+                        name="cgpa" 
+                        id="cgpa"
+                        placeholder="Enter your CGPA" 
+                        class="input-field"
+                        required
+                        min="0"
+                        max="10"
+                    >
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <span class="tooltip-text">CGPA on a scale of 0-10</span>
+                    </div>
+                </div>
+                <div class="field-strength">
+                    <div class="field-strength-bar" id="cgpa-strength" style="width: 0%"></div>
+                </div>
+                <div class="error-text" id="cgpa-error"></div>
+            </div>
+            
+            <div class="input-wrapper">
+                <label class="label-text">TECHNICAL PROFICIENCY</label>
+                <div class="relative">
+                    <span class="input-icon">💻</span>
+                    <input 
+                        type="number" 
+                        name="coding" 
+                        id="coding"
+                        placeholder="Rate your coding skills" 
+                        class="input-field"
+                        required
+                        min="0"
+                        max="10"
+                    >
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <span class="tooltip-text">Coding skills (0-10)</span>
+                    </div>
+                </div>
+                <div class="field-strength">
+                    <div class="field-strength-bar" id="coding-strength" style="width: 0%"></div>
+                </div>
+                <div class="error-text" id="coding-error"></div>
+            </div>
+
+            <div class="input-wrapper">
+                <label class="label-text">COMMUNICATION SKILLS</label>
+                <div class="relative">
+                    <span class="input-icon">💬</span>
+                    <input 
+                        type="number" 
+                        name="communication" 
+                        id="communication"
+                        placeholder="Rate your communication" 
+                        class="input-field"
+                        required
+                        min="1"
+                        max="10"
+                    >
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <span class="tooltip-text">Communication score (1-10)</span>
+                    </div>
+                </div>
+                <div class="field-strength">
+                    <div class="field-strength-bar" id="communication-strength" style="width: 0%"></div>
+                </div>
+                <div class="error-text" id="communication-error"></div>
+            </div>
+
+            <div class="input-wrapper">
+                <label class="label-text">ACADEMIC BACKLOGS</label>
+                <div class="relative">
+                    <span class="input-icon">📝</span>
+                    <input 
+                        type="number" 
+                        name="backlogs" 
+                        id="backlogs"
+                        placeholder="Number of backlogs" 
+                        class="input-field"
+                        required
+                        min="0"
+                        max="3"
+                    >
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <span class="tooltip-text">Total backlogs (0-3)</span>
+                    </div>
+                </div>
+                <div class="error-text" id="backlogs-error"></div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <span>ANALYZE PLACEMENT POTENTIAL</span>
+            </button>
+        </form>
+
+        <div id="result" class="hidden result-card">
+            <div class="text-center">
+                <div class="text-lg font-semibold mb-2">Prediction Result</div>
+                <div class="text-2xl font-bold" id="result-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('placementForm');
+        const progressDots = document.querySelectorAll('.progress-dot');
+        
+        const fields = {
+            age: { min: 18, max: 24, message: 'Age must be between 18 and 24 years' },
+            cgpa: { min: 0, max: 10, message: 'CGPA must be between 0 and 10', decimals: 2 },
+            coding: { min: 0, max: 10, message: 'Coding skills must be between 0 and 10' },
+            communication: { min: 1, max: 10, message: 'Communication score must be between 1 and 10' },
+            backlogs: { min: 0, max: 3, message: 'Backlogs must be between 0 and 3' }
+        };
+
+        const fieldNames = Object.keys(fields);
+
+        function updateProgress() {
+            const validCount = fieldNames.filter(name => {
+                const input = document.getElementById(name);
+                return input.value && input.classList.contains('success');
+            }).length;
+            
+            progressDots.forEach((dot, index) => {
+                if (index < validCount) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function updateStrengthBar(fieldName, value) {
+            const strengthBar = document.getElementById(`${fieldName}-strength`);
+            if (!strengthBar) return;
+            
+            const rule = fields[fieldName];
+            const percentage = ((value - rule.min) / (rule.max - rule.min)) * 100;
+            strengthBar.style.width = Math.min(Math.max(percentage, 0), 100) + '%';
+        }
+
+        function validateField(fieldName) {
+            const input = document.getElementById(fieldName);
+            const errorElement = document.getElementById(`${fieldName}-error`);
+            const rule = fields[fieldName];
+            const value = parseFloat(input.value);
+
+            input.classList.remove('error', 'success');
+
+            if (!input.value.trim()) {
+                errorElement.innerHTML = '<span>⚠️</span> This field is required';
+                input.classList.add('error');
+                return false;
+            }
+
+            if (isNaN(value)) {
+                errorElement.innerHTML = '<span>⚠️</span> Please enter a valid number';
+                input.classList.add('error');
+                return false;
+            }
+
+            if (value < rule.min || value > rule.max) {
+                errorElement.innerHTML = `<span>⚠️</span> ${rule.message}`;
+                input.classList.add('error');
+                return false;
+            }
+
+            if (rule.decimals !== undefined) {
+                const decimals = (value.toString().split('.')[1] || '').length;
+                if (decimals > rule.decimals) {
+                    errorElement.innerHTML = `<span>⚠️</span> Maximum ${rule.decimals} decimal places allowed`;
+                    input.classList.add('error');
+                    return false;
+                }
+            }
+
+            errorElement.innerHTML = '<span class="text-green-500">✓</span> <span class="text-green-600">Looks good</span>';
+            input.classList.add('success');
+            updateStrengthBar(fieldName, value);
+            return true;
+        }
+
+        fieldNames.forEach((fieldName) => {
+            const input = document.getElementById(fieldName);
+
+            input.addEventListener('input', () => {
+                if (input.value) {
+                    validateField(fieldName);
+                    updateProgress();
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                if (input.value) {
+                    validateField(fieldName);
+                    updateProgress();
+                }
+            });
+        });
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            let isValid = true;
+            let firstInvalidField = null;
+
+            fieldNames.forEach(fieldName => {
+                if (!validateField(fieldName)) {
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = document.getElementById(fieldName);
+                    }
+                }
+            });
+
+            if (isValid) {
+                form.submit();
+            } else if (firstInvalidField) {
+                firstInvalidField.focus();
+                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        const predictionText = '{{ prediction_text|safe }}';
+        if (predictionText && predictionText.trim()) {
+            const resultDiv = document.getElementById('result');
+            const resultText = document.getElementById('result-text');
+            resultText.textContent = predictionText;
+            resultDiv.classList.remove('hidden');
+            
+            progressDots.forEach(dot => dot.classList.add('active'));
+        }
+    </script>
+</body>
+</html>
